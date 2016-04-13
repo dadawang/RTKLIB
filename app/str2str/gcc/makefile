@@ -9,7 +9,13 @@ CTARGET=
 
 OPTION = -DENAGLO -DENAGAL -DENAQZS -DENACMP -DTRACE -DNFREQ=3 -DNEXOBS=3
 CFLAGS = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTION) $(CTARGET) -g
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+LDLIBS  = -lm -lpthread
+else
 LDLIBS  = -lm -lrt -lpthread
+endif
 
 all        : str2str
 str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o

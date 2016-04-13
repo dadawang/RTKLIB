@@ -106,7 +106,7 @@
 *                           add leap second insertion before 2015/07/01 00:00
 *                           add api read_leaps()
 *-----------------------------------------------------------------------------*/
-#define _POSIX_C_SOURCE 199309
+#define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
 #include <ctype.h>
 #ifndef WIN32
