@@ -7,7 +7,13 @@ OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DNFREQ=3
 
 # for no lapack
 CFLAGS  = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTS) -g
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+LDLIBS  = -lm
+else
 LDLIBS  = -lm -lrt
+endif
 
 #CFLAGS  = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) -DLAPACK $(OPTS)
 #LDLIBS  = -lm -lrt -llapack -lblas
