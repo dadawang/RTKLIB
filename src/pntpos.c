@@ -140,23 +140,23 @@ extern int ionocorr(gtime_t time, const nav_t *nav, int sat, const double *pos,
         return 1;
     }
     /* sbas ionosphere model */
-    if (ionoopt==IONOOPT_SBAS) {
-        return sbsioncorr(time,nav,pos,azel,ion,var);
-    }
-    /* ionex tec model */
-    if (ionoopt==IONOOPT_TEC) {
-        return iontec(time,nav,pos,azel,1,ion,var);
-    }
-    /* qzss broadcast model */
-    if (ionoopt==IONOOPT_QZS&&norm(nav->ion_qzs,8)>0.0) {
-        *ion=ionmodel(time,nav->ion_qzs,pos,azel);
-        *var=SQR(*ion*ERR_BRDCI);
-        return 1;
-    }
-    /* lex ionosphere model */
-    if (ionoopt==IONOOPT_LEX) {
-        return lexioncorr(time,nav,pos,azel,ion,var);
-    }
+    //if (ionoopt==IONOOPT_SBAS) {
+    //    return sbsioncorr(time,nav,pos,azel,ion,var);
+    //}
+    ///* ionex tec model */
+    //if (ionoopt==IONOOPT_TEC) {
+    //    return iontec(time,nav,pos,azel,1,ion,var);
+    //}
+    ///* qzss broadcast model */
+    //if (ionoopt==IONOOPT_QZS&&norm(nav->ion_qzs,8)>0.0) {
+    //    *ion=ionmodel(time,nav->ion_qzs,pos,azel);
+    //    *var=SQR(*ion*ERR_BRDCI);
+    //    return 1;
+    //}
+    ///* lex ionosphere model */
+    //if (ionoopt==IONOOPT_LEX) {
+    //    return lexioncorr(time,nav,pos,azel,ion,var);
+    //}
     *ion=0.0;
     *var=ionoopt==IONOOPT_OFF?SQR(ERR_ION):0.0;
     return 1;
@@ -186,10 +186,10 @@ extern int tropcorr(gtime_t time, const nav_t *nav, const double *pos,
         return 1;
     }
     /* sbas troposphere model */
-    if (tropopt==TROPOPT_SBAS) {
+  /*  if (tropopt==TROPOPT_SBAS) {
         *trp=sbstropcorr(time,pos,azel,var);
         return 1;
-    }
+    }*/
     /* no correction */
     *trp=0.0;
     *var=tropopt==TROPOPT_OFF?SQR(ERR_TROP):0.0;

@@ -123,6 +123,8 @@ extern "C" {
 #define NSATGPS     (MAXPRNGPS-MINPRNGPS+1) /* number of GPS satellites */
 #define NSYSGPS     1
 
+#define ENACMP // DW DEBUG
+
 #ifdef ENAGLO
 #define MINPRNGLO   1                   /* min satellite slot number of GLONASS */
 #define MAXPRNGLO   24                  /* max satellite slot number of GLONASS */
