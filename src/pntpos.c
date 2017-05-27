@@ -88,6 +88,9 @@ static double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
     P1_P2=nav->cbias[obs->sat-1][0];
     P1_C1=nav->cbias[obs->sat-1][1];
     P2_C2=nav->cbias[obs->sat-1][2];
+
+	// DW DEBUG
+	P1_P2 = 0.0;
     
     /* if no P1-P2 DCB, use TGD instead */
     if (P1_P2==0.0&&(sys&(SYS_GPS|SYS_GAL|SYS_QZS))) {
@@ -105,7 +108,7 @@ static double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
     else { /* single-frequency */
         
         if (P1==0.0) return 0.0;
-        if (obs->code[i]==CODE_L1C) P1+=P1_C1; /* C1->P1 */
+        //if (obs->code[i]==CODE_L1C) P1+=P1_C1; /* C1->P1 */
         PC=P1-P1_P2/(1.0-gamma);
     }
     if (opt->sateph==EPHOPT_SBAS) PC-=P1_C1; /* sbas clock based C1 */
@@ -202,7 +205,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    double *v, double *H, double *var, double *azel, int *vsat,
                    double *resp, int *ns)
 {
-    double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P,lam_L1;
+    double r,dion = 0.0,dtrp = 0.0,vmeas,vion = 0.0, vtrp = 0.0, rr[3],pos[3],dtr,e[3],P,lam_L1;
     int i,j,nv=0,sys,mask[4]={0};
     
     trace(3,"resprng : n=%d\n",n);
@@ -230,22 +233,22 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         /* psudorange with code bias correction */
         if ((P=prange(obs+i,nav,azel+i*2,iter,opt,&vmeas))==0.0) continue;
         
-        /* excluded satellite? */
-        if (satexclude(obs[i].sat,svh[i],opt)) continue;
-        
-        /* ionospheric corrections */
-        if (!ionocorr(obs[i].time,nav,obs[i].sat,pos,azel+i*2,
-                      iter>0?opt->ionoopt:IONOOPT_BRDC,&dion,&vion)) continue;
-        
-        /* GPS-L1 -> L1/B1 */
-        if ((lam_L1=nav->lam[obs[i].sat-1][0])>0.0) {
-            dion*=SQR(lam_L1/lam_carr[0]);
-        }
-        /* tropospheric corrections */
-        if (!tropcorr(obs[i].time,nav,pos,azel+i*2,
-                      iter>0?opt->tropopt:TROPOPT_SAAS,&dtrp,&vtrp)) {
-            continue;
-        }
+        ///* excluded satellite? */
+        //if (satexclude(obs[i].sat,svh[i],opt)) continue;
+        //
+        ///* ionospheric corrections */
+        //if (!ionocorr(obs[i].time,nav,obs[i].sat,pos,azel+i*2,
+        //              iter>0?opt->ionoopt:IONOOPT_BRDC,&dion,&vion)) continue;
+        //
+        ///* GPS-L1 -> L1/B1 */
+        //if ((lam_L1=nav->lam[obs[i].sat-1][0])>0.0) {
+        //    dion*=SQR(lam_L1/lam_carr[0]);
+        //}
+        ///* tropospheric corrections */
+        //if (!tropcorr(obs[i].time,nav,pos,azel+i*2,
+        //              iter>0?opt->tropopt:TROPOPT_SAAS,&dtrp,&vtrp)) {
+        //    continue;
+        //}
         /* pseudorange residual */
         v[nv]=P-(r+dtr-CLIGHT*dts[i*2]+dion+dtrp);
         
@@ -253,9 +256,12 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         for (j=0;j<NX;j++) H[j+nv*NX]=j<3?-e[j]:(j==3?1.0:0.0);
         
         /* time system and receiver bias offset correction */
-        if      (sys==SYS_GLO) {v[nv]-=x[4]; H[4+nv*NX]=1.0; mask[1]=1;}
-        else if (sys==SYS_GAL) {v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[2]=1;}
-        else if (sys==SYS_CMP) {v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[3]=1;}
+        if (sys==SYS_GLO) {
+			v[nv]-=x[4]; H[4+nv*NX]=1.0; mask[1]=1;}
+        else if (sys==SYS_GAL) {
+			v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[2]=1;}
+        else if (sys==SYS_CMP) {
+			v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[3]=1;}
         else mask[0]=1;
         
         vsat[i]=1; resp[i]=v[nv]; (*ns)++;
@@ -359,9 +365,10 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
             sol->age=sol->ratio=0.0;
             
             /* validate solution */
-            if ((stat=valsol(azel,vsat,n,opt,v,nv,NX,msg))) {
+           /* if ((stat=valsol(azel,vsat,n,opt,v,nv,NX,msg))) {
                 sol->stat=opt->sateph==EPHOPT_SBAS?SOLQ_SBAS:SOLQ_SINGLE;
-            }
+            }*/
+			stat = 1;
             free(v); free(H); free(var);
             
             return stat;
